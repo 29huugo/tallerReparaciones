@@ -1,7 +1,10 @@
 package dao.mysql;
 
 
+import java.util.ArrayList;
+
 import dao.interfaces.ClienteDAO;
+
 import entities.Cliente;
 
 public class ClienteDAOMySQL implements ClienteDAO {
@@ -25,13 +28,14 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	}
 
 	@Override
-	public void findall() {
+	public ArrayList findall() {
+		return null;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public Cliente findByDni(String dni) {
+	public Cliente  findByDni(String dni) {
 		// TODO Auto-generated method stub
 		return null;
 	}

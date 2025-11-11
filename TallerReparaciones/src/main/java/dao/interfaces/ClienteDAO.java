@@ -2,7 +2,7 @@ package dao.interfaces;
 
 import java.util.ArrayList;
 
-import dao.mysql.Cliente;
+import entities.Cliente;
 
 public interface ClienteDAO {
 	int insert (entities.Cliente c);
