@@ -2,30 +2,35 @@ package dao.mysql;
 
 import java.util.ArrayList;
 
+import dao.interfaces.UsuarioDAO;
 import entities.Usuario;
 
-interface UsuarioDAO {
-	boolean login(String dni, String password);
-	int insert(Usuario u);
-	ArrayList<Usuario> findall();
-	Usuario findByNombre(String nombre);
-}
-
-
-
 public class UsuarioDAOMySQL implements UsuarioDAO {
-    public boolean login(String dni, String password) {
+
+	@Override
+	public boolean login(String dni, String password) {
+		// TODO Auto-generated method stub
 		return false;
 	}
-    public int insert(Usuario u) {
+
+	@Override
+	public int insert(Usuario u) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
-    public ArrayList<Usuario> findall() {
+
+	@Override
+	public ArrayList<Usuario> findall() {
+		// TODO Auto-generated method stub
 		return null;
 	}
-    public Usuario findByNombre (String nombre) {
+
+	@Override
+	public Usuario findByNombre(String nombre) {
+		// TODO Auto-generated method stub
 		return null;
 	}
+    
     
 
 }

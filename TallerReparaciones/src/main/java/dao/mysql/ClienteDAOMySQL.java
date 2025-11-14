@@ -28,7 +28,7 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	}
 
 	@Override
-	public ArrayList findall() {
+	public ArrayList<Cliente> findall() {
 		return null;
 		// TODO Auto-generated method stub
 		
