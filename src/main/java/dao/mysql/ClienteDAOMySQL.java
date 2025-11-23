@@ -132,21 +132,6 @@ public class ClienteDAOMySQL implements ClienteDAO {
 
 				try {
 
-					conn.setAutoCommit(true);
-
-				} catch (SQLException c) {
-
-					// TODO Auto-generated catch block
-
-					e.printStackTrace();
-
-				}
-
-			}
-
-		
-		}
-
 		
 	}
 
