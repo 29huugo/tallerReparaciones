@@ -144,14 +144,32 @@ public class ClienteDAOMySQL implements ClienteDAO {
 
 			}
 
+		
 		}
 
-		return 0;
+		
 	}
 
 	@Override
 	public int delete(String dni) {
-		// TODO Auto-generated method stub
+
+				String sqlDelete = " BORRAR Cliente FROM WHERE dni = ?;";;
+				try {
+					PreparedStatement pst = conn.prepareStatement(sqlDelete);
+					pst.setInt(1, 1); // borrar id
+					int filas = pst.executeUpdate();
+					
+					if (filas > 0) {
+						System.out.println("> OK. Persona con dni 1 eliminada correctamente.");
+					} else {
+						System.out.println("> NOK. Persona con dni 1 no se encuentra en la base de datos.");
+					}
+					
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+		}
+		
 		return 0;
 	}
 
