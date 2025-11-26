@@ -58,79 +58,29 @@ public class ClienteDAOMySQL implements ClienteDAO {
 
 	@Override
 	public int update(Cliente c) {
+		int resul =0;
+		String sql = "UPDATE  Cliente ( nombre, email  ,  telefono) VALUES (?, ?, ?,)";
+		
 		try {
-
-			ResultSet resultado = null;
-
-			conn.setAutoCommit(false);
-
-			String sql = "SELECT id_cliente, nombre, telefono, email, dni_cliente FROM persona WHERE dni_cliente > ?";
-
-			PreparedStatement pst = conn.prepareStatement(
-
-					sql,
-
-					ResultSet.TYPE_SCROLL_SENSITIVE,
-
-					ResultSet.CONCUR_UPDATABLE); 
-
-			
-
-			pst.setInt(1, 15);
-
-			resultado = pst.executeQuery();
-
-			
-
-			while (resultado.next()) {
-
-				String nombre = resultado.getString("nombre");
-
-				int edadActual = resultado.getInt("edad");
-
-				resultado.updateInt("edad", edadActual + 5);
-
-				resultado.updateRow();
-
-				System.out.println("> La edad de la persona " + nombre + " se modificado a " +  resultado.getInt("edad"));
-
-			}
-
-			
-
-			conn.commit();
-
-			System.out.println("> Cambios confirmados correctamente");
-
-			
-
+			PreparedStatement pst = conn.prepareStatement(sql);
+		    pst.setString(1, c.getNombre());
+		    pst.setString(2, c.getEmail());
+            pst.setString(3, c.getTelefono());
+           
+            resul =pst.executeUpdate();
+            
+            System.out.println(" Resultado de actualización " + resul);
+		
 		} catch (SQLException e) {
+		     System.out.println(">NOK:" + e.getMessage());
+		}
+		return resul;
+		
+		
 
-			if (conn != null) {
-
-				try {
-
-					conn.rollback();
-
-					System.out.println("> Cambios confirmados correctamente");
-
-				} catch (SQLException e1) {
-
-					System.out.println("> NOK:" + e.getMessage());
+			
 
 				
-
-				
-
-			}
-
-		 
-
-		finally {
-
-			if (conn != null) {
-
-				try {
 
 		
 	}

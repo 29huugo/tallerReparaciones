@@ -1,16 +1,14 @@
 package entities;
 
-import java.util.Scanner;
-
 
 public class Cliente {
 	private int id;
 	private String nombre;
 	private String email;
 	private String dni;
-	private int telefono;
+	private String  telefono;
 	
-	public Cliente (int id, String nombre, String  email , String dni , int telefono ) {
+	public Cliente (int id, String nombre, String  email , String dni , String telefono ) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
@@ -25,12 +23,12 @@ public class Cliente {
 	}
 
 
-	public int getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
 
-	public void setTelefono(int telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 

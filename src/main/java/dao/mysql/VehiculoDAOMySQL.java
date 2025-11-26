@@ -21,16 +21,16 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
   
   
   @Override
-	public int insert(Vehiculo vehiculo) {
+	public int insert(Vehiculo v) {
 		int rc = 0;
 		String sql = "INSERT INTO Vehiculo (matricula, marca, modelo , clienteid) VALUES (?, ?, ?, ?)";
 		
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		    pst.setString(1, vehiculo.getMatricula());
-		    pst.setString(2, vehiculo.getMarca());
-		    pst.setString(3, vehiculo.getModelo());
-		    pst.setInt(4,vehiculo.getCliente_id());
+		    pst.setString(1, v.getMatricula());
+		    pst.setString(2, v.getMarca());
+		    pst.setString(3, v.getModelo());
+		    pst.setInt(4,v.getCliente_id());
 		    
 		    int resul = pst.executeUpdate();
 
@@ -38,7 +38,7 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
 	            try (ResultSet rs = pst.getGeneratedKeys()) {
 	                if (rs.next()) {
 	                    rc = rs.getInt(1);
-	                    vehiculo.setId(rc);
+	                    v.setId(rc);
 	                }
 	            }
 	        }
@@ -50,15 +50,38 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
 		}
 
 	@Override
-	public int update(Vehiculo vehiculo) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int update(Vehiculo v) {
+		int resul =0;
+		String sql = "UPDATE  Vehiculo ( matricula , Marca  , Modelo) VALUES (?, ?, ?,)";
+		
+		try {
+			PreparedStatement pst = conn.prepareStatement(sql);
+		    pst.setString(1, v.getMatricula());
+		    pst.setString(2, v.getMarca());
+            pst.setString(3, v.getModelo());
+           
+            resul =pst.executeUpdate();
+            
+            System.out.println(" Resultado de actualización " + resul);
+		
+		} catch (SQLException e) {
+		     System.out.println(">NOK:" + e.getMessage());
+		}
+		return resul;
 	}
 
 
 
 	@Override
 	public List<Vehiculo> findall() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	public List<Vehiculo> findByMatricula() {
 		// TODO Auto-generated method stub
 		return null;
 	}
