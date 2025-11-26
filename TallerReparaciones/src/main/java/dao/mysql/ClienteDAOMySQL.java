@@ -21,6 +21,9 @@ public class ClienteDAOMySQL implements ClienteDAO {
 		return 0;
 	}
 
+	
+	
+	
 	@Override
 	public int delete(String dni) {
 		// TODO Auto-generated method stub
