@@ -7,7 +7,7 @@ import entities.Cliente;
 public interface ClienteDAO {
 	int insert (entities.Cliente c);
 	int update (entities.Cliente c);
-	int delete (String dni);
+	int delete (entities.Cliente c);
 	ArrayList<Cliente> findall();
     Cliente findByDni(String dni);
 	

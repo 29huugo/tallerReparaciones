@@ -10,9 +10,7 @@ import java.util.ArrayList;
 
 import dao.DBConnection;
 import dao.interfaces.ClienteDAO;
-
 import entities.Cliente;
-
 public class ClienteDAOMySQL implements ClienteDAO {
 	private Connection conn;
 	
@@ -25,28 +23,28 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	@Override
 	public int insert(Cliente c) {
 		int resul =0;
-		String sql = "INSERT INTO Cliente (id, nombre, email  , dni,  telefono) VALUES (?, ?, ?, ?)";
+		String sql = "INSERT INTO Cliente (id, nombre, email  , dni,  telefono) VALUES (?, ?, ?, ?, ?)";
 		
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-		    pst.setInt(1, 1);
-		    pst.setString(2,"Hugo" );
-		    pst.setInt(3, 19 );
-		    pst.setString(4,"123456789");
-		    pst.setString(5, "555388791");
+		    pst.setInt(1, c.getId());
+		    pst.setString(2, c.getNombre() );
+		    pst.setString(3, c.getEmail() );
+		    pst.setString(4,c.getDni());
+		    pst.setString(5, c.getTelefono());
 
 	        if (resul > 0) {
-	            try (ResultSet rs = pst.getGeneratedKeys()) {
-	                if (rs.next()) {
-	                    resul = rs.getInt(1);
+	            try (int resul = pst.getGeneratedKeys()) {
+	                if (resul.next()) {
+	                    resul = resul.getId(1);
 	                   
 	                }
 	            }
 	        }
 		
-	        int rs = pst.executeUpdate();
+	        int resul = pst.executeUpdate();
 
-			System.out.println("resultado de inserccion:" + rs);
+			System.out.println("resultado de inserccion:" + resul);
 		
 		} catch (SQLException e) {
 		     System.out.println(">NOK:" + e.getMessage());
@@ -55,6 +53,8 @@ public class ClienteDAOMySQL implements ClienteDAO {
 		
 		
 	}
+
+	
 
 	@Override
 	public int update(Cliente c) {
@@ -69,7 +69,7 @@ public class ClienteDAOMySQL implements ClienteDAO {
            
             resul =pst.executeUpdate();
             
-            System.out.println(" Resultado de actualización " + resul);
+            System.out.println(" Resultado de la actualización " + resul);
 		
 		} catch (SQLException e) {
 		     System.out.println(">NOK:" + e.getMessage());
@@ -77,21 +77,15 @@ public class ClienteDAOMySQL implements ClienteDAO {
 		return resul;
 		
 		
-
-			
-
-				
-
-		
-	}
+}
 
 	@Override
-	public int delete(String dni) {
+	public int delete(Cliente c) {
 
-				String sqlDelete = " BORRAR Cliente FROM WHERE dni = ?;";;
+				String sqlDelete = " DELETE Cliente FROM WHERE dni = ?;";;
 				try {
 					PreparedStatement pst = conn.prepareStatement(sqlDelete);
-					pst.setInt(1, 1); // borrar id
+					pst.setInt(1, c.getId()); // 
 					int filas = pst.executeUpdate();
 					
 					if (filas > 0) {
