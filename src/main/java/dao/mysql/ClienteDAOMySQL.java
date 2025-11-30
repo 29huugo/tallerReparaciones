@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
 import dao.DBConnection;
@@ -26,29 +25,25 @@ public class ClienteDAOMySQL implements ClienteDAO {
 		String sql = "INSERT INTO Cliente (id, nombre, email  , dni,  telefono) VALUES (?, ?, ?, ?, ?)";
 		
 		try {
-			PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement pst = conn.prepareStatement(sql);
 		    pst.setInt(1, c.getId());
 		    pst.setString(2, c.getNombre() );
 		    pst.setString(3, c.getEmail() );
 		    pst.setString(4,c.getDni());
 		    pst.setString(5, c.getTelefono());
 
-	        if (resul > 0) {
-	            try (int resul = pst.getGeneratedKeys()) {
-	                if (resul.next()) {
-	                    resul = resul.getId(1);
-	                   
-	                }
-	            }
-	        }
+	        
+	            
+	        
 		
-	        int resul = pst.executeUpdate();
+	         resul = pst.executeUpdate();
 
 			System.out.println("resultado de inserccion:" + resul);
 		
 		} catch (SQLException e) {
 		     System.out.println(">NOK:" + e.getMessage());
 		}
+		
 		return resul;
 		
 		
@@ -59,7 +54,7 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	@Override
 	public int update(Cliente c) {
 		int resul =0;
-		String sql = "UPDATE  Cliente ( nombre, email  ,  telefono) VALUES (?, ?, ?,)";
+		String sql = "UPDATE FROM Cliente  (c.getNombre() , c.getEmail(), c.getTelefono() ),";
 		
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql);
@@ -73,7 +68,8 @@ public class ClienteDAOMySQL implements ClienteDAO {
 		
 		} catch (SQLException e) {
 		     System.out.println(">NOK:" + e.getMessage());
-		}
+		} 
+		
 		return resul;
 		
 		
@@ -82,10 +78,10 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	@Override
 	public int delete(Cliente c) {
 
-				String sqlDelete = " DELETE Cliente FROM WHERE dni = ?;";;
+				String sqlDelete = " DELETE FROM CLIENTE  WHERE dni = ?;";;
 				try {
 					PreparedStatement pst = conn.prepareStatement(sqlDelete);
-					pst.setInt(1, c.getId()); // 
+					pst.setString(1, c.getDni()); // 
 					int filas = pst.executeUpdate();
 					
 					if (filas > 0) {
@@ -104,15 +100,73 @@ public class ClienteDAOMySQL implements ClienteDAO {
 
 	@Override
 	public ArrayList<Cliente> findall() {
-		return null;
-		// TODO Auto-generated method stub
+		
+		ArrayList<Cliente> lista = new ArrayList<>();
+	    String sql = "SELECT * FROM cliente"; 
+
+	    try (
+	        PreparedStatement ps = conn.prepareStatement(sql); 
+	        ResultSet resul = ps.executeQuery();
+	    ) {
+	        while (resul.next()) {
+	            
+	            Cliente c = new Cliente();  
+	            
+	            c.setId(resul.getInt("id"));             
+	            c.setDni(resul.getString("dni"));         
+	            c.setNombre(resul.getString("nombre"));  
+	            
+	            lista.add(c); 
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al obtener todos los usuarios: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    return lista;
+		
+		
+		
+		
+	
 		
 	}
 
 	@Override
-	public Cliente  findByDni(String dni) {
-		// TODO Auto-generated method stub
-		return null;
+	public Cliente findByDni(String dni) {
+	    Cliente clienteEncontrado = null; 
+	    
+	  
+	    String sql = "SELECT * FROM cliente WHERE dni = ?"; 
+	    
+	    try (
+	       
+	        PreparedStatement ps = conn.prepareStatement(sql);
+	    ) {
+	       
+	        ps.setString(1, dni); 
+	        
+	    
+	        try (ResultSet resul = ps.executeQuery()) {
+	            
+	          
+	            if (resul.next()) {
+	                clienteEncontrado = new Cliente();
+	                
+	               
+	                clienteEncontrado.setId(resul.getInt("id"));
+	                clienteEncontrado.setDni(resul.getString("dni"));
+	                clienteEncontrado.setNombre(resul.getString("nombre"));
+	              
+	            }
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al buscar cliente por DNI: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    
+	    return clienteEncontrado;
 	}
 
 	

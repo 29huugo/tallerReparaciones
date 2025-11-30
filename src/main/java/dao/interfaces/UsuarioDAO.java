@@ -11,6 +11,7 @@ public interface UsuarioDAO  {
 	int delete (Usuario u);
 	ArrayList<Usuario> findall();
 	Usuario findByNombre(String nombre);
+	
 }
 
 

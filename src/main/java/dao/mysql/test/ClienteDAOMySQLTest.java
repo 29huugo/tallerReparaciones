@@ -4,11 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-class ClienteDAOMySQLTest {
+import entities.Cliente;
 
-	@Test
-	void test() {
-		fail("Not yet implemented");
-	}
+class ClienteDAOMySQLTest {
 
 }

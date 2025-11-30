@@ -7,6 +7,11 @@ private String nombre;
 private boolean password;
 private String  rol;
 
+
+
+public Usuario() {
+	
+}
 public Usuario (int id ,String dni ,String nombre , boolean password , String rol) {
 super();
 this.id = id;
@@ -46,8 +51,8 @@ public boolean isPassword() {
 	return password;
 }
 
-public void setPassword(boolean password) {
-	this.password = password;
+public void setPassword(boolean password ) {
+	this.password = password ;
 }
 
 public String getRol() {

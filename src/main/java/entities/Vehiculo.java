@@ -7,6 +7,10 @@ public class Vehiculo {
 	private String modelo ;
 	private int Cliente_id;
 	
+	public Vehiculo() {
+        
+    }
+	
 	public Vehiculo (int id, String matricula , String  marca , String modelo , int Cliente_id ) {
 		super();
 		this.id = id;

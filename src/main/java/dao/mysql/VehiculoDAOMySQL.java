@@ -4,12 +4,13 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.DBConnection;
 import dao.interfaces.VehiculoDAO;
 import entities.Vehiculo;
+
 
 public class VehiculoDAOMySQL implements VehiculoDAO  {
   private Connection conn;
@@ -22,37 +23,36 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
   
   @Override
 	public int insert(Vehiculo v) {
-		int rc = 0;
+		int resul = 0;
 		String sql = "INSERT INTO Vehiculo (matricula, marca, modelo , clienteid) VALUES (?, ?, ?, ?)";
 		
 		try {
-			PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement pst = conn.prepareStatement(sql);
 		    pst.setString(1, v.getMatricula());
 		    pst.setString(2, v.getMarca());
 		    pst.setString(3, v.getModelo());
 		    pst.setInt(4,v.getCliente_id());
 		    
-		    int resul = pst.executeUpdate();
+		    
+		    
+		    
 
-	        if (resul > 0) {
-	            try (ResultSet rs = pst.getGeneratedKeys()) {
-	                if (rs.next()) {
-	                    rc = rs.getInt(1);
-	                    v.setId(rc);
-	                }
-	            }
-	        }
+	         resul = pst.executeUpdate();
+
+			System.out.println("resultado de inserccion:" + resul);
+		
 		} catch (SQLException e) {
-			e.printStackTrace();
+		     System.out.println(">NOK:" + e.getMessage());
 		}
-		return rc;
+		return resul;
+		
 	       
 		}
 
 	@Override
 	public int update(Vehiculo v) {
 		int resul =0;
-		String sql = "UPDATE  Vehiculo ( matricula , Marca  , Modelo) VALUES (?, ?, ?,)";
+		String sql = "UPDATE Vehiculo SET marca = ?, modelo = ? WHERE matricula = ?";
 		
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql);
@@ -74,8 +74,29 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
 
 	@Override
 	public List<Vehiculo> findall() {
-		// TODO Auto-generated method stub
-		return null;
+		ArrayList<Vehiculo> lista = new ArrayList<>();
+	    String sql = "SELECT * FROM Vehiculo"; 
+
+	    try (
+	        PreparedStatement ps = conn.prepareStatement(sql); 
+	        ResultSet resul = ps.executeQuery();
+	    ) {
+	        while (resul.next()) {
+	            
+	            Vehiculo v = new Vehiculo();  
+	            
+	            v.setId(resul.getInt("id"));             
+	            v.setMarca(resul.getString("marca"));         
+	            v.setModelo(resul.getString("modelo"));  
+	            
+	            lista.add(v); 
+	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al obtener todos los usuarios: " + e.getMessage());
+	        e.printStackTrace();
+	    }
+	    
+	    return lista;
 	}
 
 
@@ -85,5 +106,8 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+
+
 
 }

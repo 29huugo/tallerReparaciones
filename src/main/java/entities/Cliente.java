@@ -8,6 +8,11 @@ public class Cliente {
 	private String dni;
 	private String  telefono;
 	
+	
+	public Cliente() {
+		
+	}
+	
 	public Cliente (int id, String nombre, String  email , String dni , String telefono ) {
 		super();
 		this.id = id;

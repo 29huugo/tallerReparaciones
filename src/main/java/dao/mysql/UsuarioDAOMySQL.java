@@ -1,17 +1,16 @@
 package dao.mysql;
 
 import java.sql.Connection;
+
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.List;
 
 import dao.DBConnection;
 import dao.interfaces.UsuarioDAO;
 import entities.Usuario;
-import entities.Vehiculo;
+import utils.PasswordUtils;
 
 public class UsuarioDAOMySQL implements UsuarioDAO {
 	private Connection conn;
@@ -20,38 +19,46 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 		 conn = DBConnection.getInstance().getConnection(); 
 	  }
 	  
-	
-	
-	@Override
-	public boolean login(String dni, String password) {
-		Usuario usuario = null;
-		ResultSet res = null;
-		
-		
-		String sql = "SELECT id,nombre, rol FROM Usuario WHERE dni = ? AND password = ?";
-		PreparedStatement pst;
-		
-		try {
-			pst = conn.prepareStatement(sql);
-		    pst.setString(1, dni);
-		    pst.setString(2, PasswordUtils.hashPassword(password));
-		    res=pst.executeQuery();
+	 public boolean login(String dni, String password) {
 		    
-		    if (res.next()) {
-		    	usuario = new Usuario();
-		    	usuario.setId(res.getInt("id"));
-		    	usuario.setDni(dni);
-		    	usuario.setPassword(PasswordUtils.hashPasword(password));
-		    	usuario.setNombre(res.getString("nombre"));
-		    	usuario.setRol(res.getString("rol"));
+		    boolean loginExitoso = false;
+		    Usuario usuario = null; 
+		    ResultSet resul = null;
+		    PreparedStatement pst = null; 
+		    String sql = "SELECT id, nombre, rol FROM Usuario WHERE dni = ? AND password = ?";
+		    
+		    try {
+		        pst = conn.prepareStatement(sql);
+		        pst.setString(1, dni);
+		        pst.setString(2, PasswordUtils.hashPassword(password)); 
+		        
+		        resul = pst.executeQuery();
+		        
+		       
+		        if (resul.next()) {
+		            loginExitoso = true; 
+		            usuario = new Usuario();
+		            usuario.setId(resul.getInt("id"));
+		            usuario.setDni(dni);
+		            usuario.setPassword(loginExitoso); 
+		            usuario.setNombre(resul.getString("nombre"));
+		            usuario.setRol(resul.getString("rol"));
+		            
+		        }
+		        
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		        loginExitoso = false; 
+		    } finally {
+		        
+		        if (resul != null) { try { resul.close(); } catch (SQLException e) { e.printStackTrace(); } }
+		        if (pst != null) { try { pst.close(); } catch (SQLException e) { e.printStackTrace(); } }
+		       
 		    }
-		    
-		} catch (SQLException e) {
-			e.printStackTrace();
+		    return loginExitoso;
 		}
-		
-	return usuario;
-	}
+	
+	
 
 	@Override
 	public int insert(Usuario u) {
@@ -59,32 +66,28 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 		String sql = "INSERT INTO USUARIO (id, dni, password , nombre, rol ) VALUES (?, ?, ?, ?)";
 		
 		try {
-			PreparedStatement pst = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			PreparedStatement pst = conn.prepareStatement(sql);
 		    pst.setInt(1, 1);
 		    pst.setString(2,"123456789");
 		    pst.setBoolean(3,u.isPassword() );
 		    pst.setString(4, "Carlos" );
 		    pst.setString(5, "mecanico");
 
-	        if (resul > 0) {
-	            try (ResultSet rs = pst.getGeneratedKeys()) {
-	                if (rs.next()) {
-	                    resul = rs.getInt(1);
-	                   
-	                }
-	            }
-	        }
-		
-	        int rs = pst.executeUpdate();
 
-			System.out.println("resultado de inserccion:" + rs);
+	         resul = pst.executeUpdate();
+
+			System.out.println("resultado de inserccion:" + resul);
 		
 		} catch (SQLException e) {
 		     System.out.println(">NOK:" + e.getMessage());
 		}
-		return resul;
 		
-	}
+		return resul;
+	        }
+		
+	       
+		
+	
 
 	
 	
@@ -114,8 +117,24 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 	
 	@Override
 	public int delete(Usuario u) {
-		// TODO Auto-generated method stub
-		return 0;
+		String sqlDelete = " DELETE FROM CLIENTE  WHERE dni = ?;";;
+		try {
+			PreparedStatement pst = conn.prepareStatement(sqlDelete);
+			pst.setString(1, u.getDni()); // 
+			int filas = pst.executeUpdate();
+			
+			if (filas > 0) {
+				System.out.println("> OK. Persona con dni 1 eliminada correctamente.");
+			} else {
+				System.out.println("> NOK. Persona con dni 1 no se encuentra en la base de datos.");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+}
+
+return 0;
+		
 	}
     
 	
@@ -123,30 +142,39 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 	
 	
 	@Override
-	public ArrayList<Usuario> findall() {
+	public ArrayList<Usuario> findall () {
 		
-		List<Usuario> lista = new ArrayList<>();
-	    String sql = "SELECT * FROM usuario";
+		ArrayList<Usuario> usuarios= new ArrayList<>();
+	    String sql = "SELECT * FROM usuario"; 
 
-	    try (Connection conn = DBConnection.getInstance().getConnection();
-	         PreparedStatement ps = conn.prepareStatement(sql);
-	         ResultSet rs = ps.executeQuery()) {
-
-	        while (rs.next()) {
-	            Usuario t = new Usuario();
-	          
-	            lista.add(t);
+	    try (
+	        PreparedStatement ps = conn.prepareStatement(sql); 
+	        ResultSet resul = ps.executeQuery();
+	    ) {
+	        while (resul.next()) {
+	            
+	            Usuario u = new Usuario();  
+	            
+	            u.setId(resul.getInt("id"));             
+	            u.setDni(resul.getString("dni"));         
+	            u.setNombre(resul.getString("nombre"));   
+	            u.setPassword(resul.getBoolean("password")); 
+	            u.setRol(resul.getString("rol"));
+	            usuarios.add(u); 
 	        }
+	    } catch (SQLException e) {
+	        System.out.println("Error al obtener todos los usuarios: " + e.getMessage());
+	        e.printStackTrace();
 	    }
-	    return (ArrayList<Usuario>) lista;
+	    
+	    return usuarios;
 	}
 
 	@Override
 	public Usuario findByNombre(String nombre) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
-
 
 
 	
