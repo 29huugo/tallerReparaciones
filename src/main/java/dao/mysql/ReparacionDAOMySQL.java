@@ -158,17 +158,17 @@ public class ReparacionDAOMySQL implements ReparacionDAO {
 	    ) {
 	        ps.setInt(1, idReparacion);
 	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) {
+	        try (ResultSet resul = ps.executeQuery()) {
+	            if (resul.next()) {
 	                reparacion = new Reparacion();
 	                
-	                reparacion.setId(rs.getInt("id"));             
-	                reparacion.setVehiculo_id(rs.getInt("id_vehiculo")); 
-	                reparacion.setUsuario_id(rs.getInt("id_usuario"));
+	                reparacion.setId(resul.getInt("id"));             
+	                reparacion.setVehiculo_id(resul.getInt("id_vehiculo")); 
+	                reparacion.setUsuario_id(resul.getInt("id_usuario"));
 	                
-	                reparacion.setDescripcion(rs.getString("descripcion")); 
-	                reparacion.setFecha_entrada(rs.getInt("fecha_entrada"));
-	                reparacion.setCoste(rs.getDouble("coste"));
+	                reparacion.setDescripcion(resul.getString("descripcion")); 
+	                reparacion.setFecha_entrada(resul.getInt("fecha_entrada"));
+	                reparacion.setCoste(resul.getDouble("coste"));
 	            }
 	        }
 	    } catch (SQLException e) {

@@ -178,14 +178,40 @@ return filas;
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Error al buscar usuario por nombre: " + e.getMessage());
+            System.out.println("Error al buscar usuario por nombre: " + e.getMessage());
             e.printStackTrace();
         }
         return usuarioEncontrado;
 	}
 
 
-	
+	@Override
+	public Usuario findByDni(String Dni) {
+		Usuario usuarioEncontrado = null;
+        String sql = "SELECT * FROM Usuario WHERE nombre = ?";
+        
+        try (
+            PreparedStatement ps = conn.prepareStatement(sql);
+        ) {
+            ps.setString(1, Dni);
+            
+            try (ResultSet resul = ps.executeQuery()) {
+                if (resul.next()) {
+                    usuarioEncontrado = new Usuario();
+                    usuarioEncontrado.setId(resul.getInt("id"));
+                    usuarioEncontrado.setDni(resul.getString("dni"));
+                    usuarioEncontrado.setNombre(resul.getString("nombre"));
+                    usuarioEncontrado.setPassword(resul.getString("password"));
+                    usuarioEncontrado.setRol(resul.getString("rol"));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar usuario por nombre: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return usuarioEncontrado;
+	}
+
 
 
 
