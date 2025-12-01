@@ -4,7 +4,7 @@ public class Usuario {
 private int id;
 private String dni;
 private String nombre;
-private boolean password;
+private String password;
 private String  rol;
 
 
@@ -12,7 +12,7 @@ private String  rol;
 public Usuario() {
 	
 }
-public Usuario (int id ,String dni ,String nombre , boolean password , String rol) {
+public Usuario (int id ,String dni ,String nombre , String password , String rol) {
 super();
 this.id = id;
 this.dni=dni;
@@ -47,11 +47,11 @@ public void setNombre(String nombre) {
 	this.nombre = nombre;
 }
 
-public boolean isPassword() {
+public String getPassword() {
 	return password;
 }
 
-public void setPassword(boolean password ) {
+public void setPassword(String password ) {
 	this.password = password ;
 }
 

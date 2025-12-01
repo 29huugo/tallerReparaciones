@@ -88,7 +88,8 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
 	            v.setId(resul.getInt("id"));             
 	            v.setMarca(resul.getString("marca"));         
 	            v.setModelo(resul.getString("modelo"));  
-	            
+	            v.setMatricula(resul.getString("matricula"));
+	            v.setCliente_id(resul.getInt("clienteid"));
 	            lista.add(v); 
 	        }
 	    } catch (SQLException e) {
@@ -102,10 +103,32 @@ public class VehiculoDAOMySQL implements VehiculoDAO  {
 
 
 	@Override
-	public List<Vehiculo> findByMatricula() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    public Vehiculo findByMatricula(String matricula) { 
+        Vehiculo  vehiculoEncontrado = null;
+        String sql = "SELECT * FROM Vehiculo WHERE matricula = ?";
+        
+        try (
+            PreparedStatement ps = conn.prepareStatement(sql);
+        ) {
+            ps.setString(1, matricula); 
+            
+            try (ResultSet resul = ps.executeQuery()) {
+                if (resul.next()) {
+                	vehiculoEncontrado = new Vehiculo();
+                	vehiculoEncontrado.setId(resul.getInt("id"));
+                	vehiculoEncontrado.setMatricula(resul.getString("matricula"));
+                	vehiculoEncontrado.setMarca(resul.getString("marca"));
+                	vehiculoEncontrado.setModelo(resul.getString("modelo"));
+                	vehiculoEncontrado.setCliente_id(resul.getInt("clienteid"));
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al buscar vehículo por matrícula: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return vehiculoEncontrado;
+    }
 
 
 

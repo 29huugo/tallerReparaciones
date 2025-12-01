@@ -9,7 +9,7 @@ public interface VehiculoDAO {
 	int insert(Vehiculo vehiculo);
     int update ( Vehiculo vehiculo);
 	List <Vehiculo> findall();
-	List <Vehiculo> findByMatricula();
+	Vehiculo findByMatricula(String matricula);
 	
 
 

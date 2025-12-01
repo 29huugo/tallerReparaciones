@@ -20,42 +20,36 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 	  }
 	  
 	 public boolean login(String dni, String password) {
+		    String sql = "SELECT id, dni, password, nombre, rol FROM Usuario WHERE dni = ?";
 		    
-		    boolean loginExitoso = false;
-		    Usuario usuario = null; 
-		    ResultSet resul = null;
-		    PreparedStatement pst = null; 
-		    String sql = "SELECT id, nombre, rol FROM Usuario WHERE dni = ? AND password = ?";
-		    
-		    try {
-		        pst = conn.prepareStatement(sql);
+		    try (PreparedStatement pst = conn.prepareStatement(sql)) {
+		        
 		        pst.setString(1, dni);
-		        pst.setString(2, PasswordUtils.hashPassword(password)); 
 		        
-		        resul = pst.executeQuery();
-		        
-		       
-		        if (resul.next()) {
-		            loginExitoso = true; 
-		            usuario = new Usuario();
-		            usuario.setId(resul.getInt("id"));
-		            usuario.setDni(dni);
-		            usuario.setPassword(loginExitoso); 
-		            usuario.setNombre(resul.getString("nombre"));
-		            usuario.setRol(resul.getString("rol"));
-		            
+		        try (ResultSet resul = pst.executeQuery()) {
+			        
+			        if (resul.next()) {
+			            String storedHash = resul.getString("password");
+			            
+			            
+			            if (PasswordUtils.verifyPassword(password, storedHash)) {
+	                        Usuario usuario = new Usuario();
+	                        usuario.setId(resul.getInt("id"));
+	                        usuario.setDni(dni);
+	                        usuario.setPassword(storedHash); 
+	                        usuario.setNombre(resul.getString("nombre"));
+	                        usuario.setRol(resul.getString("rol"));
+	                    
+			                return true;
+			            }
+			        }
 		        }
-		        
 		    } catch (SQLException e) {
+	            System.err.println("Error  durante el inicio de sesión: " + e.getMessage());
 		        e.printStackTrace();
-		        loginExitoso = false; 
-		    } finally {
-		        
-		        if (resul != null) { try { resul.close(); } catch (SQLException e) { e.printStackTrace(); } }
-		        if (pst != null) { try { pst.close(); } catch (SQLException e) { e.printStackTrace(); } }
-		       
 		    }
-		    return loginExitoso;
+		   
+		    return false;
 		}
 	
 	
@@ -69,7 +63,7 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 			PreparedStatement pst = conn.prepareStatement(sql);
 		    pst.setInt(1, 1);
 		    pst.setString(2,"123456789");
-		    pst.setBoolean(3,u.isPassword() );
+		    pst.setString(3,u.getPassword() );
 		    pst.setString(4, "Carlos" );
 		    pst.setString(5, "mecanico");
 
@@ -86,54 +80,47 @@ public class UsuarioDAOMySQL implements UsuarioDAO {
 	        }
 		
 	       
-		
+	@Override
+	public int update(Usuario u) {
+	    int resul = 0;
+	    String sql = "UPDATE Usuario SET password = ?, nombre = ?, rol = ? WHERE id = ?";
+	    
+	    try (
+	        PreparedStatement pst = conn.prepareStatement(sql);
+	    ) {
+	        pst.setString(1, u.getPassword());
+	        pst.setString(2, u.getNombre());
+	        pst.setString(3, u.getRol());
+	        pst.setInt(4, u.getId());
+	       
+	        resul = pst.executeUpdate();
+	        
+	    } catch (SQLException e) {
+	    }
+	    return resul;
+	}	
 	
 
 	
 	
-	@Override
-	public int update(Usuario u) {
-			int resul =0;
-			String sql = "UPDATE  Usuario ( password , nombre  ,rol VALUES (?, ?, ?,)";
-			
-			try {
-				PreparedStatement pst = conn.prepareStatement(sql);
-			    pst.setBoolean(1, u.isPassword());
-			    pst.setString(2, u.getNombre());
-	            pst.setString(3, u.getRol());
-	           
-	            resul =pst.executeUpdate();
-	            
-	            System.out.println(" Resultado de actualización " + resul);
-			
-			} catch (SQLException e) {
-			     System.out.println(">NOK:" + e.getMessage());
-			}
-			return resul;
-		
-	
-	}
 	
 	
 	@Override
 	public int delete(Usuario u) {
-		String sqlDelete = " DELETE FROM CLIENTE  WHERE dni = ?;";;
+		int filas = 0;
+		String sqlDelete = " DELETE FROM USUARIO  WHERE dni = ?;";;
 		try {
 			PreparedStatement pst = conn.prepareStatement(sqlDelete);
 			pst.setString(1, u.getDni()); // 
-			int filas = pst.executeUpdate();
+		 filas = pst.executeUpdate();
 			
-			if (filas > 0) {
-				System.out.println("> OK. Persona con dni 1 eliminada correctamente.");
-			} else {
-				System.out.println("> NOK. Persona con dni 1 no se encuentra en la base de datos.");
-			}
 			
 		} catch (SQLException e) {
+			System.out.println("Error al eliminar usuario con DNI " + u.getDni() + ": " + e.getMessage());
 			e.printStackTrace();
 }
 
-return 0;
+return filas;
 		
 	}
     
@@ -158,7 +145,7 @@ return 0;
 	            u.setId(resul.getInt("id"));             
 	            u.setDni(resul.getString("dni"));         
 	            u.setNombre(resul.getString("nombre"));   
-	            u.setPassword(resul.getBoolean("password")); 
+	            u.setPassword(resul.getString("password")); 
 	            u.setRol(resul.getString("rol"));
 	            usuarios.add(u); 
 	        }
@@ -172,8 +159,29 @@ return 0;
 
 	@Override
 	public Usuario findByNombre(String nombre) {
-		
-		return null;
+		Usuario usuarioEncontrado = null;
+        String sql = "SELECT * FROM Usuario WHERE nombre = ?";
+        
+        try (
+            PreparedStatement ps = conn.prepareStatement(sql);
+        ) {
+            ps.setString(1, nombre);
+            
+            try (ResultSet resul = ps.executeQuery()) {
+                if (resul.next()) {
+                    usuarioEncontrado = new Usuario();
+                    usuarioEncontrado.setId(resul.getInt("id"));
+                    usuarioEncontrado.setDni(resul.getString("dni"));
+                    usuarioEncontrado.setNombre(resul.getString("nombre"));
+                    usuarioEncontrado.setPassword(resul.getString("password"));
+                    usuarioEncontrado.setRol(resul.getString("rol"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al buscar usuario por nombre: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return usuarioEncontrado;
 	}
 
 

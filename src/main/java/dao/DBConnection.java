@@ -35,7 +35,7 @@ private static DBConnection instance;
 			conexionMySQL = dataSource.getConnection();
 			System.out.println("> Conexión establecida correctamente");
 		} catch (SQLException | IOException e) {
-			System.err.println("> Error al conectar con mysql: " + e.getMessage());
+			System.out.println("> Error al conectar con mysql: " + e.getMessage());
 		}
 	}
 	

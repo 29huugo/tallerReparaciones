@@ -33,10 +33,7 @@ public class ClienteDAOMySQL implements ClienteDAO {
 		    pst.setString(5, c.getTelefono());
 
 	        
-	            
-	        
-		
-	         resul = pst.executeUpdate();
+	        resul = pst.executeUpdate();
 
 			System.out.println("resultado de inserccion:" + resul);
 		
@@ -54,20 +51,21 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	@Override
 	public int update(Cliente c) {
 		int resul =0;
-		String sql = "UPDATE FROM Cliente  (c.getNombre() , c.getEmail(), c.getTelefono() ),";
+		String sql =  "UPDATE Cliente SET nombre = ?, email = ?, telefono = ? WHERE id = ?"; ;
 		
 		try {
 			PreparedStatement pst = conn.prepareStatement(sql);
 		    pst.setString(1, c.getNombre());
 		    pst.setString(2, c.getEmail());
             pst.setString(3, c.getTelefono());
-           
+            pst.setInt(4, c.getId());
+            
             resul =pst.executeUpdate();
             
-            System.out.println(" Resultado de la actualización " + resul);
+           
 		
 		} catch (SQLException e) {
-		     System.out.println(">NOK:" + e.getMessage());
+		     System.out.println(">No se pudo actualizar el cliente con el id: " + c.getId()+ e.getMessage());
 		} 
 		
 		return resul;
@@ -77,25 +75,21 @@ public class ClienteDAOMySQL implements ClienteDAO {
 
 	@Override
 	public int delete(Cliente c) {
-
+         int filas = 0;
 				String sqlDelete = " DELETE FROM CLIENTE  WHERE dni = ?;";;
 				try {
 					PreparedStatement pst = conn.prepareStatement(sqlDelete);
 					pst.setString(1, c.getDni()); // 
-					int filas = pst.executeUpdate();
+				    filas = pst.executeUpdate();
 					
-					if (filas > 0) {
-						System.out.println("> OK. Persona con dni 1 eliminada correctamente.");
-					} else {
-						System.out.println("> NOK. Persona con dni 1 no se encuentra en la base de datos.");
-					}
+					
 					
 				} catch (SQLException e) {
-					// TODO Auto-generated catch block
+				
 					e.printStackTrace();
 		}
 		
-		return 0;
+		return filas;
 	}
 
 	@Override
@@ -115,11 +109,12 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	            c.setId(resul.getInt("id"));             
 	            c.setDni(resul.getString("dni"));         
 	            c.setNombre(resul.getString("nombre"));  
-	            
+	            c.setEmail(resul.getString("email")); 
+                c.setTelefono(resul.getString("telefono"));
 	            lista.add(c); 
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al obtener todos los usuarios: " + e.getMessage());
+	        System.out.println("Error al obtener todos los clientes: " + e.getMessage());
 	        e.printStackTrace();
 	    }
 	    
@@ -157,11 +152,12 @@ public class ClienteDAOMySQL implements ClienteDAO {
 	                clienteEncontrado.setId(resul.getInt("id"));
 	                clienteEncontrado.setDni(resul.getString("dni"));
 	                clienteEncontrado.setNombre(resul.getString("nombre"));
-	              
+	                clienteEncontrado.setEmail(resul.getString("email")); 
+                    clienteEncontrado.setTelefono(resul.getString("telefono"));
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.out.println("Error al buscar cliente por DNI: " + e.getMessage());
+	        System.out.println(" Error al buscar cliente por DNI: " + e.getMessage());
 	        e.printStackTrace();
 	    }
 	    
