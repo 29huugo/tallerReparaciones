@@ -457,5 +457,11 @@ public class ControladorTaller {
              System.out.println("Entrada no válida. Por favor, ingrese un número.");
         }
         return opcion;
+    
+    }
+
+    public static void main(String[] args) throws SQLException {
+        ControladorTaller app = new ControladorTaller();
+        app.iniciarAplicacion();
     }
 }
