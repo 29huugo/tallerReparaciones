@@ -2,7 +2,10 @@ package vista;
 
 
 
-	import java.util.Scanner;
+	import java.sql.SQLException;
+import java.util.Scanner;
+
+import ControladorTaller.ControladorTaller;
 
 	public class VistaTaller {
 
@@ -12,6 +15,11 @@ package vista;
 	        this.sc = sc;
 	    }
 
+	    public static void main(String[] args) throws SQLException {
+	        ControladorTaller app = new ControladorTaller();
+	        app.iniciarAplicacion();
+	    }
+	    
 	    public int mostrarMenuInicial() {
 	        System.out.println("\n--- TALLER MECÁNICO ---");
 	        System.out.println("1. Iniciar Sesión (CU2)");
