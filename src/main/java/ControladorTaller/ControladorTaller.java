@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 import dao.interfaces.UsuarioDAO;
 import dao.interfaces.ReparacionDAO;
@@ -86,7 +85,7 @@ public class ControladorTaller {
         Usuario usuarioDB = usuarioDAO.findByNombre(nombre);
 
         if (usuarioDB != null) {
-            String hashedPassword = PasswordUtils.hashPassword(password);
+            String hashedPassword = PasswordUtils.getSHA256(password);
             
             if (usuarioDB.getPassword().equals(hashedPassword)) {
                 this.usuarioActual = usuarioDB;
@@ -134,9 +133,13 @@ public class ControladorTaller {
         try {
             ArrayList<Reparacion> todasReparaciones = (ArrayList<Reparacion>) reparacionDAO.findall();
             
-            List<Reparacion> reparacionesFinalizadas = todasReparaciones.stream()
-                .filter(r -> r.getCoste() > 0.0)
-                .collect(Collectors.toList());
+            // Reemplazo de Stream: Filtrado tradicional
+            List<Reparacion> reparacionesFinalizadas = new ArrayList<>();
+            for (Reparacion r : todasReparaciones) {
+                if (r.getCoste() > 0.0) {
+                    reparacionesFinalizadas.add(r);
+                }
+            }
 
             if (reparacionesFinalizadas.isEmpty()) {
                 System.out.println("Actualmente no hay reparaciones finalizadas.");
@@ -160,7 +163,33 @@ public class ControladorTaller {
         }
     }
     
-   
+    private void consultarMisReparaciones() {
+        System.out.println("\n--- CONSULTAR MIS REPARACIONES ---");
+        
+        try {
+            List<Reparacion> misReparaciones = reparacionDAO.findByUsuario_id(usuarioActual.getId());
+            
+            if (misReparaciones.isEmpty()) {
+                System.out.println("No tienes reparaciones asignadas.");
+                return;
+            }
+            
+            System.out.printf("| %-4s | %-10s | %-40s | %-10s |%n", "ID", "FECHA", "DESCRIPCIÓN", "COSTE");
+            System.out.println("-----------------------------------------------------------------");
+            
+            for (Reparacion r : misReparaciones) {
+                System.out.printf("| %-4d | %-10d | %-40s | %-10.2f |%n",
+                    r.getId(),
+                    r.getFecha_entrada(),
+                    r.getDescripcion(),
+                    r.getCoste());
+            }
+            System.out.println("-----------------------------------------------------------------");
+            
+        } catch (Exception e) {
+            System.out.println("Error al consultar mis reparaciones: " + e.getMessage());
+        }
+    }
 
     private void registrarNuevaReparacion() {
         System.out.println("\n--- REGISTRAR NUEVA REPARACIÓN (CU3) ---");
@@ -374,7 +403,11 @@ public class ControladorTaller {
         try {
             ArrayList<Reparacion> todas = (ArrayList<Reparacion>) reparacionDAO.findall();
             int totalReparaciones = todas.size();
-            double costeTotal = todas.stream().mapToDouble(Reparacion::getCoste).sum();
+            
+            double costeTotal = 0.0;
+            for (Reparacion r : todas) {
+                costeTotal += r.getCoste();
+            }
 
             System.out.println("Resumen General:");
             System.out.println("   Total de reparaciones registradas: " + totalReparaciones);
@@ -405,7 +438,7 @@ public class ControladorTaller {
                     modificarDatosReparacion(true);
                     break;
                 case 3:
-                	consultarReparacionesFinalizadas();
+                    consultarMisReparaciones();
                     break;
                 case 0:
                     break;
@@ -457,11 +490,8 @@ public class ControladorTaller {
              System.out.println("Entrada no válida. Por favor, ingrese un número.");
         }
         return opcion;
-    
     }
 
-    public static void main(String[] args) throws SQLException {
-        ControladorTaller app = new ControladorTaller();
-        app.iniciarAplicacion();
-    }
+  
+    
 }
